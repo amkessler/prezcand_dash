@@ -10,7 +10,6 @@ output:
 
 ```{r setup, include=FALSE}
 
-library(ggcal)
 library(flexdashboard)
 library(tidyverse)
 library(lubridate)
@@ -20,7 +19,6 @@ library(plotly)
 library(DT)
 library(googlesheets)
 library(kableExtra)
-library(sf)
 library(leaflet)
 library(tigris)
 options(tigris_class = "sf")

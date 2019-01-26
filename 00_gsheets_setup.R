@@ -6,7 +6,7 @@ library(gt)
 library(ggmap)
 
 
-# gs_ls() %>% View()
+gs_ls() %>% View()
 
 
 #register DW's 2020 google sheet
