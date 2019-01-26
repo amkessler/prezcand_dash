@@ -5,7 +5,7 @@ library(googlesheets)
 library(gt)
 library(ggmap)
 
-
+#this will trigger a web page to authenticate with google account
 gs_ls() %>% View()
 
 
