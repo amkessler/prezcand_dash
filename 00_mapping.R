@@ -4,6 +4,9 @@ library(janitor)
 library(googlesheets)
 library(leaflet)
 library(ggmap)
+library(RColorBrewer)
+library(htmlwidgets)
+library(htmltools)
 
 #this will trigger a web page to authenticate with google account
 # gs_ls() %>% View()
@@ -68,34 +71,42 @@ locations_df <- mutate_geocode(locs, location_geo)
 locations_df 
 
 #join the geocoded location table to the main upcoming events to add lat/lon
-joined <- left_join(events_upcoming, locations_df)
+joined_formap <- left_join(events_upcoming, locations_df) %>% 
+  mutate(cand_lastname = as.character(cand_lastname),
+         month = month(date),
+         day = day(date)
+  )
 
 
 #### MAPPING POINTS WITH LEAFLET #####
 
 #labels
-# labs1 <- lapply(seq(nrow(zip_map)), function(i) {
-#   paste0( '<p>', 'Zip code: ', '<strong>', zip_map[i, "GEOID"], '</strong></p>',
-#           '<p></p>', 
-#           "3rd quarter donations: ", zip_map[i, "amtdisplay"]
-#   ) 
-# })
+labs1 <- lapply(seq(nrow(joined_formap)), function(i) {
+  paste0( '<p>', 'Candidate: ', '<strong>', joined_formap[i, "cand_lastname"], '</strong></p>',
+          '<p></p>',
+          "City: ", joined_formap[i, "city"],
+          '<p></p>',
+          "Scheduled date: ", joined_formap[i, "month"], "/", joined_formap[i, "day"]
+  )
+})
 
-m1 <- leaflet(zip_map) %>% 
+m1 <- leaflet(joined_formap) %>% 
   addTiles() %>%
-  addCircles(lng = ~lon, lat = ~lat, weight = 1,
-             radius = ~sqrt(amtcontrib) * 300, 
+  addMarkers(lng = ~lon, lat = ~lat,
+             # radius = ~sqrt(amtcontrib) * 300,
              # fillColor = ~pal(cmag_d_spotcnt),
-             label = lapply(labs1, HTML)
+             # popup = lapply(labs1, HTML),
+             label = lapply(labs1, HTML),
+             clusterOptions = markerClusterOptions()
   ) %>%
-  addControl("Beto O'Rourke - Individual contributions by zip code (Q3)", position = "topright") 
+  addControl("Upcoming candidate visits to confirmed cities", position = "topright") 
 # %>% 
 #   setView(-96, 37.8, zoom=4) 
 
 m1
 
 #save to frameable file for CMS
-htmlwidgets::saveWidget(frameableWidget(m1),'beto_contribs_byzip_points.html')
+# htmlwidgets::saveWidget(frameableWidget(m1),'beto_contribs_byzip_points.html')
 
 
 
