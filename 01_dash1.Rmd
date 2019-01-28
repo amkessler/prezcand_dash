@@ -167,9 +167,10 @@ events_past_grp <- events_selectcols %>%
   arrange(cand_fullname, desc(n)) %>% 
   rename(trips = n)
 
+
 datatable(events_past_grp, 
           rownames = FALSE, 
-          filter = "top",
+          # filter = "top",
           options = list(bPaginate = FALSE, 
                          searching = FALSE
     #                      initComplete = JS(
@@ -346,7 +347,7 @@ next5 <- events %>%
 
 next5 %>% 
     kable() %>% 
-    kable_styling(bootstrap_options = c("striped", "condensed"), 
+    kable_styling(bootstrap_options = c("striped"), 
                 full_width = F,
                 position = "left")
 
