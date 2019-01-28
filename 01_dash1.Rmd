@@ -245,49 +245,6 @@ dd_nomenu
 
 
 
-Visits by State
-=====================================
-The number of visits to date a candidate has made to each state.
-
------------------------------------------------------------------------
-
-```{r}
-
-by_cand_and_state <- events %>% 
-  filter(date < Sys.Date(),
-         state != "INTL") %>% 
-  count(cand_lastname, state) %>% 
-  arrange(cand_lastname, desc(n)) 
-
-
-colourCount = length(unique(by_cand_and_state$state))
-getPalette = colorRampPalette(brewer.pal(9, "Set2"))
-
-d <- ggplot(data = by_cand_and_state, aes(x = state, y = n, fill = state)) +
-  geom_col() +
-  # coord_flip() + 
-  theme_minimal() +
-  scale_fill_manual(values = getPalette(colourCount))
-  # scale_fill_brewer(palette="Set3")
-
-d2 <- d + labs(x ="", y = "") +
-  theme(legend.title=element_blank()) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-
-d3 <- d2 + facet_wrap(~cand_lastname)
-
-
-dd <- ggplotly(d3) 
-
-dd_nomenu <- dd %>% config(displayModeBar = FALSE)
-dd_nomenu
-
-
-
-
-```
-
 
 
 
@@ -459,6 +416,53 @@ leaflet() %>%
 
 
 ```
+
+
+
+Past Visits by State
+=====================================
+### {data-height=1000}
+The number of visits to date a candidate has made to each state.
+
+-----------------------------------------------------------------------
+
+```{r}
+
+by_cand_and_state <- events %>% 
+  filter(date < Sys.Date(),
+         state != "INTL") %>% 
+  count(cand_lastname, state) %>% 
+  arrange(cand_lastname, desc(n)) 
+
+
+colourCount = length(unique(by_cand_and_state$state))
+getPalette = colorRampPalette(brewer.pal(9, "Set2"))
+
+d <- ggplot(data = by_cand_and_state, aes(x = state, y = n, fill = state)) +
+  geom_col() +
+  # coord_flip() + 
+  theme_minimal() +
+  scale_fill_manual(values = getPalette(colourCount))
+  # scale_fill_brewer(palette="Set3")
+
+d2 <- d + labs(x ="", y = "") +
+  theme(legend.title=element_blank()) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+d3 <- d2 + facet_wrap(~cand_lastname)
+
+
+dd <- ggplotly(d3) 
+
+dd_nomenu <- dd %>% config(displayModeBar = FALSE)
+dd_nomenu
+
+
+
+
+```
+
 
 
 
