@@ -254,9 +254,6 @@ Row {data-height=1000}
 
 ```{r}
 
-# https://rstudio.github.io/DT/functions.html
-
-
 ev_big <- events %>% 
   select(-cand_restname, -cand_lastname)
 
@@ -426,9 +423,6 @@ Row {data-height=1000}
 -----------------------------------------------------------------------
 
 ```{r}
-
-# https://rstudio.github.io/DT/functions.html
-
 
 remarks_big <- keyremarks %>% 
   select(candidate,
