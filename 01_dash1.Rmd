@@ -20,6 +20,10 @@ library(DT)
 library(googlesheets)
 library(kableExtra)
 library(leaflet)
+library(ggmap)
+library(RColorBrewer)
+library(htmlwidgets)
+library(htmltools)
 library(tigris)
 options(tigris_class = "sf")
 
@@ -355,15 +359,65 @@ next5 %>%
 ```
 
 
-### Map of all known upcoming trips - THIS IS STILL WORK IN PROGRESS, IS BLANK FOR NOW
+### Map of all upcoming cities known
 
 ```{r}
 
-#test map as placeholder 
+#filter for only future dates
+events_upcoming <- events %>% 
+  filter(date > Sys.Date()) %>% 
+  mutate(location_geo = paste0(city, ", ", state)) %>% 
+  select(cand_lastname, date, city, state, location_geo, event_type, description)
 
-leaflet() %>% 
-  addProviderTiles("CartoDB.Positron") %>%
-  setView(-98.483330, 38.712046, zoom = 4) 
+events_upcoming$location_geo <- str_remove(events_upcoming$location_geo, "NA, ")
+  
+
+#create this file locally in the same directory to store the api credentials for geocoder via google
+#when using git assign it to the gitignore list to avoid public dislcosure of the key
+source("geocodekey.R")
+
+locs <- events_upcoming %>% 
+  filter(!is.na(city),
+         state != "INTL") %>% 
+  select(location_geo) %>% 
+  unique() 
+
+locations_df <- mutate_geocode(locs, location_geo)
+
+#join the geocoded location table to the main upcoming events to add lat/lon
+joined_formap <- left_join(events_upcoming, locations_df) %>% 
+  mutate(cand_lastname = as.character(cand_lastname),
+         month = month(date),
+         day = day(date)
+  )
+
+
+#mapping with leaflet
+
+#labels
+labs1 <- lapply(seq(nrow(joined_formap)), function(i) {
+  paste0( '<p>', 'Candidate: ', '<strong>', joined_formap[i, "cand_lastname"], '</strong></p>',
+          '<p></p>',
+          "City: ", joined_formap[i, "city"],
+          '<p></p>',
+          "Scheduled date: ", joined_formap[i, "month"], "/", joined_formap[i, "day"]
+  )
+})
+
+m1 <- leaflet(joined_formap) %>% 
+  addTiles() %>%
+  addMarkers(lng = ~lon, lat = ~lat,
+             # radius = ~sqrt(amtcontrib) * 300,
+             # fillColor = ~pal(cmag_d_spotcnt),
+             # popup = lapply(labs1, HTML),
+             label = lapply(labs1, HTML),
+             clusterOptions = markerClusterOptions()
+  ) %>%
+  addControl("Upcoming candidate visits to confirmed cities", position = "topright") 
+# %>% 
+#   setView(-96, 37.8, zoom=4) 
+
+m1
 
 ```
 
