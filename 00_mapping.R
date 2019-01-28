@@ -3,7 +3,7 @@ library(lubridate)
 library(janitor)
 library(googlesheets)
 library(leaflet)
-library(tidycensus)
+library(ggmap)
 
 #this will trigger a web page to authenticate with google account
 # gs_ls() %>% View()
@@ -37,29 +37,66 @@ events <- events %>%
   )
 
 
-
+#filter for only future dates
 events_upcoming <- events %>% 
   filter(date > Sys.Date()) %>% 
-  mutate(location = paste0(city, ", ", state)) %>% 
-  select(cand_lastname, date, location, event_type, description)
+  mutate(location_geo = paste0(city, ", ", state)) %>% 
+  select(cand_lastname, date, city, state, location_geo, event_type, description)
+
+
+#remove cities that are NA
+events_upcoming$location_geo <- str_remove(events_upcoming$location_geo, "NA, ")
+  
+
+
+#### GEOCODING ON THE FLY ####
+
+# https://www.jessesadler.com/post/geocoding-with-r/
+# https://community.rstudio.com/t/how-to-add-my-api-key-into-get-map/15992
+
+#create this file locally in the same directory to store the api credentials for geocoder via google
+#when using git assign it to the gitignore list to avoid public dislcosure of the key
+source("geocodekey.R")
+
+locs <- events_upcoming %>% 
+  filter(!is.na(city),
+         state != "INTL") %>% 
+  select(location_geo) %>% 
+  unique() 
+
+locations_df <- mutate_geocode(locs, location_geo)
+locations_df 
+
+#join the geocoded location table to the main upcoming events to add lat/lon
+joined <- left_join(events_upcoming, locations_df)
+
+
+#### MAPPING POINTS WITH LEAFLET #####
+
+#labels
+# labs1 <- lapply(seq(nrow(zip_map)), function(i) {
+#   paste0( '<p>', 'Zip code: ', '<strong>', zip_map[i, "GEOID"], '</strong></p>',
+#           '<p></p>', 
+#           "3rd quarter donations: ", zip_map[i, "amtdisplay"]
+#   ) 
+# })
+
+m1 <- leaflet(zip_map) %>% 
+  addTiles() %>%
+  addCircles(lng = ~lon, lat = ~lat, weight = 1,
+             radius = ~sqrt(amtcontrib) * 300, 
+             # fillColor = ~pal(cmag_d_spotcnt),
+             label = lapply(labs1, HTML)
+  ) %>%
+  addControl("Beto O'Rourke - Individual contributions by zip code (Q3)", position = "topright") 
+# %>% 
+#   setView(-96, 37.8, zoom=4) 
+
+m1
+
+#save to frameable file for CMS
+htmlwidgets::saveWidget(frameableWidget(m1),'beto_contribs_byzip_points.html')
 
 
 
 
-#some exploring 
-events %>% 
-  count(state) %>% 
-  arrange(desc(n)) 
-
-events %>% 
-  count(cand_fullname) %>% 
-  arrange(desc(n)) 
-
-events_selectcols <- events %>% 
-  select(date, cand_fullname, city, state, event_type, sponsor, description)
-
-
-events %>% 
-  filter(date < today("EST")) %>% 
-  count(cand_fullname, state) %>% 
-  arrange(cand_fullname, desc(n)) 
