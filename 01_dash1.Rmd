@@ -433,3 +433,11 @@ announcements %>%
 
 ```
 
+
+Questions?
+=====================================
+
+Row 
+-----------------------------------------------------------------------
+If you have any questions about this candidate data, please give a shout to David Wright or Aaron Kessler at 
+David.E.Wright@turner.com or Aaron.Kessler@turner.com.  Thanks!
