@@ -122,10 +122,8 @@ announcements <- dw2020 %>%
 
 ### GEOGRAPHIC DATA ####
 
-#get geo data of us states from tigris
-us_geo <- states(class = "sf")
-us_geo$state <- us_geo$STUSPS
-
+# Downloading the shapefiles for states at the lowest resolution from tigris
+states <- states(cb=T)
 
 
 ```
@@ -359,65 +357,62 @@ next5 %>%
 ```
 
 
-### Map of all upcoming cities known
+### Map of all cities known in the coming week
 
 ```{r}
 
-#filter for only future dates
-events_upcoming <- events %>% 
-  filter(date > Sys.Date()) %>% 
-  mutate(location_geo = paste0(city, ", ", state)) %>% 
-  select(cand_lastname, date, city, state, location_geo, event_type, description)
+#### STATE BY STATE SHADED MAP ####
 
-events_upcoming$location_geo <- str_remove(events_upcoming$location_geo, "NA, ")
-  
+upcoming_states <- events %>% 
+  filter(date > Sys.Date(),
+         date < (Sys.Date()+7)) %>% 
+  group_by(state) %>%
+  summarize(total=n()) 
 
-#create this file locally in the same directory to store the api credentials for geocoder via google
-#when using git assign it to the gitignore list to avoid public dislcosure of the key
-source("geocodekey.R")
+# Now we use the Tigris function geo_join to bring together 
+# are the two columns they'll be joined by
+states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
 
-locs <- events_upcoming %>% 
-  filter(!is.na(city),
-         state != "INTL") %>% 
-  select(location_geo) %>% 
-  unique() 
+# Creating a color palette based on the number range in the total column
+pal <- colorNumeric("Greens", domain=states_merged_sb$total)
 
-locations_df <- mutate_geocode(locs, location_geo)
-
-#join the geocoded location table to the main upcoming events to add lat/lon
-joined_formap <- left_join(events_upcoming, locations_df) %>% 
-  mutate(cand_lastname = as.character(cand_lastname),
-         month = month(date),
-         day = day(date)
-  )
+# Getting rid of rows with NA values
+# Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
+states_merged_sb <- subset(states_merged_sb, !is.na(total))
 
 
-#mapping with leaflet
+#create map with hover popups
 
-#labels
-labs1 <- lapply(seq(nrow(joined_formap)), function(i) {
-  paste0( '<p>', 'Candidate: ', '<strong>', joined_formap[i, "cand_lastname"], '</strong></p>',
-          '<p></p>',
-          "City: ", joined_formap[i, "city"],
-          '<p></p>',
-          "Scheduled date: ", joined_formap[i, "month"], "/", joined_formap[i, "day"]
-  )
-})
+popup_sb <- paste0("Trips: ", as.character(states_merged_sb$total))
 
-m1 <- leaflet(joined_formap) %>% 
+leaflet() %>%
   addTiles() %>%
-  addMarkers(lng = ~lon, lat = ~lat,
-             # radius = ~sqrt(amtcontrib) * 300,
-             # fillColor = ~pal(cmag_d_spotcnt),
-             # popup = lapply(labs1, HTML),
-             label = lapply(labs1, HTML),
-             clusterOptions = markerClusterOptions()
-  ) %>%
-  addControl("Upcoming candidate visits to confirmed cities", position = "topright") 
-# %>% 
-#   setView(-96, 37.8, zoom=4) 
+  # setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addPolygons(data = states_merged_sb , 
+              fillColor = ~pal(states_merged_sb$total), 
+              fillOpacity = 0.9, 
+              weight = 0.2, 
+              smoothFactor = 0.2,
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label=popup_sb,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "15px",
+                direction = "auto")) %>%
+  addLegend(pal = pal, 
+            values = states_merged_sb$total, 
+            position = "bottomright", 
+            title = "Total trips")
 
-m1
+# 
+# mymap %>% 
+#   addTiles()
+
+
 
 ```
 

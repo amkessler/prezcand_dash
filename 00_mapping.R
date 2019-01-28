@@ -7,6 +7,7 @@ library(ggmap)
 library(RColorBrewer)
 library(htmlwidgets)
 library(htmltools)
+library(tigris)
 
 #this will trigger a web page to authenticate with google account
 # gs_ls() %>% View()
@@ -42,71 +43,165 @@ events <- events %>%
 
 #filter for only future dates
 events_upcoming <- events %>% 
-  filter(date > Sys.Date()) %>% 
+  filter(date > Sys.Date(),
+         date < (Sys.Date()+7)) %>% 
   mutate(location_geo = paste0(city, ", ", state)) %>% 
   select(cand_lastname, date, city, state, location_geo, event_type, description)
 
 
-#remove cities that are NA
+#remove NA's from city descriptions without a city
 events_upcoming$location_geo <- str_remove(events_upcoming$location_geo, "NA, ")
   
 
 
-#### GEOCODING ON THE FLY ####
+#### STATE BY STATE SHADED MAP ####
 
-# https://www.jessesadler.com/post/geocoding-with-r/
-# https://community.rstudio.com/t/how-to-add-my-api-key-into-get-map/15992
+# Downloading the shapefiles for states at the lowest resolution from tigris
+states <- states(cb=T)
 
-#create this file locally in the same directory to store the api credentials for geocoder via google
-#when using git assign it to the gitignore list to avoid public dislcosure of the key
-source("geocodekey.R")
-
-locs <- events_upcoming %>% 
-  filter(!is.na(city),
-         state != "INTL") %>% 
-  select(location_geo) %>% 
-  unique() 
-
-locations_df <- mutate_geocode(locs, location_geo)
-locations_df 
-
-#join the geocoded location table to the main upcoming events to add lat/lon
-joined_formap <- left_join(events_upcoming, locations_df) %>% 
-  mutate(cand_lastname = as.character(cand_lastname),
-         month = month(date),
-         day = day(date)
-  )
+states %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(popup=~NAME)
 
 
-#### MAPPING POINTS WITH LEAFLET #####
 
-#labels
-labs1 <- lapply(seq(nrow(joined_formap)), function(i) {
-  paste0( '<p>', 'Candidate: ', '<strong>', joined_formap[i, "cand_lastname"], '</strong></p>',
-          '<p></p>',
-          "City: ", joined_formap[i, "city"],
-          '<p></p>',
-          "Scheduled date: ", joined_formap[i, "month"], "/", joined_formap[i, "day"]
-  )
-})
+upcoming_states <- events %>% 
+  filter(date > Sys.Date(),
+         date < (Sys.Date()+7)) %>% 
+  group_by(state) %>%
+  summarize(total=n()) 
 
-m1 <- leaflet(joined_formap) %>% 
-  addTiles() %>%
-  addMarkers(lng = ~lon, lat = ~lat,
-             # radius = ~sqrt(amtcontrib) * 300,
-             # fillColor = ~pal(cmag_d_spotcnt),
-             # popup = lapply(labs1, HTML),
-             label = lapply(labs1, HTML),
-             clusterOptions = markerClusterOptions()
-  ) %>%
-  addControl("Upcoming candidate visits to confirmed cities", position = "topright") 
-# %>% 
-#   setView(-96, 37.8, zoom=4) 
+upcoming_states <- upcoming_states %>% 
+  mutate(total = as.integer(total))
 
-m1
+
+# Now we use the Tigris function geo_join to bring together 
+# are the two columns they'll be joined by
+
+states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
+
+# Creating a color palette based on the number range in the total column
+pal <- colorNumeric("Greens", domain=states_merged_sb$total)
+
+# Getting rid of rows with NA values
+# Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
+
+states_merged_sb <- subset(states_merged_sb, !is.na(total))
+
+# Setting up the pop up text
+popup_sb <- paste0("Total: ", as.character(states_merged_sb$total))
+
+
+# Mapping it with the new tiles CartoDB.Positron
+l <- leaflet() %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addPolygons(data = states_merged_sb , 
+              fillColor = ~pal(states_merged_sb$total), 
+              fillOpacity = 0.7, 
+              weight = 0.2, 
+              smoothFactor = 0.2, 
+              popup = ~popup_sb) %>%
+  addLegend(pal = pal, 
+            values = states_merged_sb$total, 
+            position = "bottomright", 
+            title = "Trips")
+
+l %>% 
+  addTiles()
+
+
+
+#alternative method -- hover popups
+popup_sb <- paste0("Trips: ", as.character(states_merged_sb$total))
+
+l2 <- leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addPolygons(data = states_merged_sb , 
+              fillColor = ~pal(states_merged_sb$total), 
+              fillOpacity = 0.9, 
+              weight = 0.2, 
+              smoothFactor = 0.2,
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label=popup_sb,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "15px",
+                direction = "auto")) %>%
+  addLegend(pal = pal, 
+            values = states_merged_sb$total, 
+            position = "bottomright", 
+            title = "Total trips")
+
+
+
+l2 %>% 
+  addTiles()
+
+
+# 
+# #### POINT MAP FOR CITIES ####
+# 
+# # https://www.jessesadler.com/post/geocoding-with-r/
+# # https://community.rstudio.com/t/how-to-add-my-api-key-into-get-map/15992
+# 
+# #create this file locally in the same directory to store the api credentials for geocoder via google
+# #when using git assign it to the gitignore list to avoid public dislcosure of the key
+# source("geocodekey.R")
+# 
+# locs <- events_upcoming %>% 
+#   filter(!is.na(city),
+#          state != "INTL") %>% 
+#   select(location_geo) %>% 
+#   unique() 
+# 
+# locations_df <- mutate_geocode(locs, location_geo)
+# locations_df 
+# 
+# #join the geocoded location table to the main upcoming events to add lat/lon
+# joined_formap <- left_join(events_upcoming, locations_df) %>% 
+#   mutate(cand_lastname = as.character(cand_lastname),
+#          month = month(date),
+#          day = day(date)
+#   )
+# 
+# 
+# #labels
+# labs1 <- lapply(seq(nrow(joined_formap)), function(i) {
+#   paste0( '<p>', 'Candidate: ', '<strong>', joined_formap[i, "cand_lastname"], '</strong></p>',
+#           '<p></p>',
+#           "City: ", joined_formap[i, "city"],
+#           '<p></p>',
+#           "Scheduled date: ", joined_formap[i, "month"], "/", joined_formap[i, "day"]
+#   )
+# })
+# 
+# m1 <- leaflet(joined_formap) %>% 
+#   addTiles() %>%
+#   addMarkers(lng = ~lon, lat = ~lat,
+#              # radius = ~sqrt(amtcontrib) * 300,
+#              # fillColor = ~pal(cmag_d_spotcnt),
+#              # popup = lapply(labs1, HTML),
+#              label = lapply(labs1, HTML),
+#              clusterOptions = markerClusterOptions()
+#   ) %>%
+#   addControl("Upcoming candidate visits to confirmed cities", position = "topright") 
+# # %>% 
+# #   setView(-96, 37.8, zoom=4) 
+# 
+# m1
+
+
 
 #save to frameable file for CMS
 # htmlwidgets::saveWidget(frameableWidget(m1),'beto_contribs_byzip_points.html')
+
 
 
 
