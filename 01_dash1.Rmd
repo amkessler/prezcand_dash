@@ -347,6 +347,8 @@ next5 <- events %>%
   select(cand_lastname, date, location, event_type, description) %>% 
   arrange(date)
 
+#remove NA's from city descriptions without a city
+next5$location <- str_remove(next5$location, "NA, ")
 
 next5 %>% 
     kable() %>% 
