@@ -131,7 +131,7 @@ states <- states(cb=T)
 
 Summary Charts and Table
 ===================================== 
-Trips from Nov 6 through `r format(today("EST"), format="%B %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. 
+Trips from Nov 6 through `r format(Sys.Date(), format="%b %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. (Last updated on `r format(Sys.time(), format="%B %d %I:%M %Z")`)
 <!-- (This dashboard was last updated at `r format(Sys.time(), "%a %b %d %X")`)  -->
 
 Row {data-height=650}
@@ -157,7 +157,7 @@ datatable(events_past,
 ```
 
 
-### Visits by candidate to each state {data-width=200}
+### How many trips a candidate's taken to each state {data-width=200}
 
 ```{r}
 
