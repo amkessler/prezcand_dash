@@ -247,36 +247,6 @@ dd_nomenu
 
 
 
-
-
-Full Detailed Data 
-=====================================
-To filter, click on the boxes at the top of the columns. To sort, use the up/down arrows by the column names.
-
-Row {data-height=1000}
------------------------------------------------------------------------
-
-```{r}
-
-ev_big <- events %>% 
-  select(-cand_restname, -cand_lastname)
-
-datatable(ev_big,
-          rownames = FALSE,
-          filter = "top",
-          extensions = 'Buttons',
-          options = list(bPaginate = FALSE, dom = 'Bfrtip',
-     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
-          )) %>%
-  formatDate('date', 'toLocaleDateString') %>%
-  formatStyle('cand_fullname', fontWeight = 'bold')
-
-
-```
-
-
-
-
 Upcoming Events Breakdown
 =====================================
 
@@ -360,7 +330,7 @@ next5 %>%
 ```
 
 
-### Map of visits per state in the coming week
+### Visits per state over the next week
 
 ```{r}
 
@@ -418,6 +388,37 @@ leaflet() %>%
 
 
 ```
+
+
+
+
+
+Full Detailed Data 
+=====================================
+To filter, click on the boxes at the top of the columns. To sort, use the up/down arrows by the column names.
+
+Row {data-height=1000}
+-----------------------------------------------------------------------
+
+```{r}
+
+ev_big <- events %>% 
+  select(-cand_restname, -cand_lastname)
+
+datatable(ev_big,
+          rownames = FALSE,
+          filter = "top",
+          extensions = 'Buttons',
+          options = list(bPaginate = FALSE, dom = 'Bfrtip',
+     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+          )) %>%
+  formatDate('date', 'toLocaleDateString') %>%
+  formatStyle('cand_fullname', fontWeight = 'bold')
+
+
+```
+
+
 
 
 
