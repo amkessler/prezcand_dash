@@ -438,13 +438,14 @@ remarks_big <- keyremarks %>%
          city,
          state,
          on_cam,
-         source_link,
-        subject_1,
+         ms_number,
+         subject_1,
          tc_in,
          key_sound,
          subject_2,
          tc_in_2,
-         other_sound
+         other_sound,
+        source_link
           ) %>% 
   mutate(
     on_cam = as.factor(str_to_lower(on_cam))
