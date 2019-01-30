@@ -1,0 +1,93 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard
+runtime: shiny
+---
+  
+  
+  
+  
+``` {r setup, include=FALSE}
+library(tidyverse)
+library(DT)
+library(lubridate)
+library(janitor)
+library(glue)
+library(plotly)
+library(googlesheets)
+library(kableExtra)
+library(leaflet)
+library(ggmap)
+library(RColorBrewer)
+library(htmlwidgets)
+library(htmltools)
+library(tigris)
+options(tigris_class = "sf")
+
+events_temp <- read_csv("events_temp.csv", 
+    col_types = cols(cd_if_known = col_character(), 
+        date = col_character(), source_or_link2 = col_character(), 
+        thru_date = col_character()))
+
+#set formatting of certain columns
+events_temp <- events_temp %>% 
+  mutate(
+    date = mdy(date),
+    thru_date = mdy(thru_date),
+    cand_fullname = as.factor(cand_fullname),
+    state = as.factor(state),
+    cd_if_known = as.factor(cd_if_known),
+    event_type = as.factor(event_type),
+    cand_fullname = as.factor(cand_fullname),
+    cand_lastname = as.factor(cand_lastname),
+    sponsor = as.factor(sponsor)
+         )
+
+
+temp_candbystate <- events_temp %>% 
+  group_by(cand_lastname, state) %>% 
+  summarise(visits = n()) %>% 
+  ungroup()
+
+startData <- temp_candbystate
+GBChoices <- as.list(names(startData))
+names(GBChoices) <- paste(names(startData),map(startData,~length(unique(.x))))
+
+updateData <- reactive(
+  startData %>% group_by(!!! rlang::syms(input$GB)) %>% summarise_if(is.numeric,sum,na.rm=T))
+```
+
+Column {.sidebar}
+------------------------------------------------------------------
+```{r}
+selectInput(inputId = "GB",label = "Group By",choices = GBChoices)
+selectInput(inputId = "Metric",label = "Metric",choices = names(select_if(startData,is.numeric)))
+```
+
+Column 
+------------------------------------------------------------------
+  
+  ### Plot
+```{r}
+renderPlot({
+  updateData() %>%
+    ggplot(aes(x=!! rlang::sym(input$GB),y=!! rlang::sym(input$Metric),fill=!! rlang::sym(input$GB))) +
+    geom_col() +
+    coord_flip()
+})
+
+```
+
+
+<!-- ### Table -->
+<!-- ```{r} -->
+<!-- renderDT( -->
+<!--   updateData(), rownames = F, extensions = 'Buttons', filter="top", editable=T, -->
+<!--   options = list( -->
+<!--     dom = 'Blfrtip', -->
+<!--     buttons = c('copy', 'csv', 'excel', 'pdf', 'print'), -->
+<!--     lengthMenu = list(c(10,50,100,-1),c(10,50,100,"All")) -->
+<!--   ) -->
+<!-- ) -->
+<!-- ``` -->

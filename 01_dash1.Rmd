@@ -125,6 +125,7 @@ announcements <- dw2020 %>%
 # Downloading the shapefiles for states at the lowest resolution from tigris
 states <- states(cb=T)
 
+# write_csv(events, "events_temp.csv")
 
 ```
 
@@ -151,7 +152,7 @@ datatable(events_past,
           filter = "top") %>% 
   formatDate('date', 'toDateString') %>%  
   # formatDate('thru_date', 'toDateString') %>% 
-  formatStyle('cand_fullname', fontWeight = 'bold')
+  formatStyle('cand_fullname', fontWeight = 'bold') 
 
 
 ```
