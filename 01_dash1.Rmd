@@ -125,7 +125,7 @@ announcements <- dw2020 %>%
 # Downloading the shapefiles for states at the lowest resolution from tigris
 states <- states(cb=T)
 
-# write_csv(events, "events_temp.csv")
+write_csv(events, "events_temp.csv")
 
 ```
 
