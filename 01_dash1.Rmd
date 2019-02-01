@@ -126,6 +126,8 @@ announcements <- dw2020 %>%
 states <- states(cb=T)
 
 # write_csv(events, "events_temp.csv")
+# write_csv(bystate, "bystate.csv")
+
 
 ```
 
