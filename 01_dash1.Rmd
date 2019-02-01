@@ -125,8 +125,10 @@ announcements <- dw2020 %>%
 # Downloading the shapefiles for states at the lowest resolution from tigris
 states <- states(cb=T)
 
+
 # write_csv(events, "events_temp.csv")
 # write_csv(bystate, "bystate.csv")
+
 
 
 ```
@@ -171,7 +173,6 @@ events_past_grp <- events_selectcols %>%
   count(cand_fullname, state) %>% 
   arrange(cand_fullname, desc(n)) %>% 
   rename(trips = n)
-
 
 datatable(events_past_grp, 
           rownames = FALSE, 
