@@ -363,7 +363,7 @@ upcoming_states <- events %>%
 states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
 
 # Creating a color palette based on the number range in the total column
-pal <- colorNumeric("Greens", domain=states_merged_sb$total)
+pal <- colorNumeric("YlGn", domain=states_merged_sb$total)
 
 # Getting rid of rows with NA values
 # Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
@@ -441,6 +441,162 @@ datatable(ev_big,
 
 ```
 
+
+
+
+
+Maps: State by State
+=====================================
+Maps
+
+Row 
+-----------------------------------------------------------------------
+
+### Total trips to date by all candidates
+
+```{r}
+
+#### STATE BY STATE SHADED MAP ####
+
+upcoming_states <- events %>% 
+  filter(date <= Sys.Date()) %>% 
+  group_by(state) %>%
+  summarize(total=n()) 
+
+# Now we use the Tigris function geo_join to bring together 
+# are the two columns they'll be joined by
+states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
+
+# Creating a color palette based on the number range in the total column
+pal <- colorNumeric("YlOrRd", domain=states_merged_sb$total)
+
+# Getting rid of rows with NA values
+# Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
+states_merged_sb <- subset(states_merged_sb, !is.na(total))
+states_merged_sb$total <- as.integer(states_merged_sb$total)
+
+#create map with hover popups
+
+popup_sb <- paste0("Trips: ", as.character(states_merged_sb$total))
+
+leaflet() %>%
+  addTiles() %>%
+  # setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addPolygons(data = states_merged_sb , 
+              fillColor = ~pal(states_merged_sb$total), 
+              fillOpacity = 0.9, 
+              weight = 0.2, 
+              smoothFactor = 0.2,
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label=popup_sb,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "15px",
+                direction = "auto")) %>%
+  addLegend(pal = pal, 
+            values = states_merged_sb$total,
+            # bins = 4,
+            position = "bottomright", 
+            title = "Total trips", 
+            labFormat = labelFormat(digits = 0)
+            )
+
+
+
+```
+
+
+### All known upcoming trips (subject to change)
+
+```{r}
+
+#### STATE BY STATE SHADED MAP ####
+
+upcoming_states <- events %>% 
+  filter(date > Sys.Date()) %>% 
+  group_by(state) %>%
+  summarize(total=n()) 
+
+# Now we use the Tigris function geo_join to bring together 
+# are the two columns they'll be joined by
+states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
+
+# Creating a color palette based on the number range in the total column
+pal <- colorNumeric("YlGn", domain=states_merged_sb$total)
+
+# Getting rid of rows with NA values
+# Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
+states_merged_sb <- subset(states_merged_sb, !is.na(total))
+states_merged_sb$total <- as.integer(states_merged_sb$total)
+
+#create map with hover popups
+
+popup_sb <- paste0("Upcoming trips: ", as.character(states_merged_sb$total))
+
+leaflet() %>%
+  addTiles() %>%
+  # setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addPolygons(data = states_merged_sb , 
+              fillColor = ~pal(states_merged_sb$total), 
+              fillOpacity = 0.9, 
+              weight = 0.2, 
+              smoothFactor = 0.2,
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label=popup_sb,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "15px",
+                direction = "auto")) %>%
+  addLegend(pal = pal, 
+            values = states_merged_sb$total,
+            # bins = 4,
+            position = "bottomright", 
+            title = "Total trips", 
+            labFormat = labelFormat(digits = 0)
+            )
+
+
+
+```
+
+Row 
+-----------------------------------------------------------------------
+
+### Total trips since midterms
+
+```{r}
+
+### figure out which hearing is next?
+tot <- events %>%
+  filter(date < today("EST")) %>%
+  nrow()
+
+valueBox(tot, icon = "fa-step-backward", color = "#F3B279")
+
+
+```
+
+### Total scheduled trips ahead
+
+```{r}
+
+### figure out which hearing is next?
+tot_ahead <- events %>%
+  filter(date > today("EST")) %>%
+  nrow()
+
+valueBox(tot_ahead, icon = "fa-plane", color = "#48B052")
+
+
+```
 
 
 
