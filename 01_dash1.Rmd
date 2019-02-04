@@ -563,8 +563,36 @@ leaflet() %>%
 
 ```
 
+Row 
+-----------------------------------------------------------------------
+
+### Total trips since midterms
+
+```{r}
+
+### figure out which hearing is next?
+tot <- events %>%
+  filter(date < today("EST")) %>%
+  nrow()
+
+valueBox(tot, icon = "fa-step-backward", color = "#F3B279")
 
 
+```
+
+### Total scheduled trips ahead
+
+```{r}
+
+### figure out which hearing is next?
+tot_ahead <- events %>%
+  filter(date > today("EST")) %>%
+  nrow()
+
+valueBox(tot_ahead, icon = "fa-plane", color = "#48B052")
+
+
+```
 
 
 
