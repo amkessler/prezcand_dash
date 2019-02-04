@@ -285,7 +285,7 @@ month <- as.character(month(next_date))
 
 h_desc <- glue("{month}/{day}")
 
-valueBox(h_desc, icon = "fa-pencil", color = "warning")
+valueBox(h_desc, icon = "fa-pencil", color = "#E76F61")
 
 
 ```
@@ -299,7 +299,7 @@ tot <- events %>%
   filter(date < today("EST")) %>%
   nrow()
 
-valueBox(tot, icon = "fa-step-backward", color = "green")
+valueBox(tot, icon = "fa-step-backward", color = "#F3B279")
 
 
 ```
@@ -313,7 +313,7 @@ tot_ahead <- events %>%
   filter(date > today("EST")) %>%
   nrow()
 
-valueBox(tot_ahead, icon = "fa-plane", color = "blue")
+valueBox(tot_ahead, icon = "fa-plane", color = "#48B052")
 
 
 ```
