@@ -136,14 +136,19 @@ states <- readRDS("states_saved.rds")
 # write_csv(events, "events_temp.csv")
 # write_csv(bystate, "bystate.csv")
 
-
+# set time object set to EST
+d <- Sys.Date()
+d <- .POSIXct(d, "EST")
+  
+t <- Sys.time()
+t <- .POSIXct(t, "EST")
 
 ```
 
 
 Summary Charts and Table
 ===================================== 
-Trips from Nov 6 through `r format(Sys.Date(), format="%b %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. (Last updated on `r format(Sys.time(), format="%B %d %I:%M %Z")`)
+Trips from Nov 6 through `r format(d, format="%b %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. (Last updated on `r format(t, format="%B %d %I:%M %Z")`)
 <!-- (This dashboard was last updated at `r format(Sys.time(), "%a %b %d %X")`)  -->
 
 Row {data-height=650}
