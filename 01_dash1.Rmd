@@ -117,7 +117,8 @@ announcements <- dw2020 %>%
   mutate(
     date = mdy(date)
   ) %>% 
-  select(-x7)
+  select(-x7, -x8) %>% 
+  arrange(desc(date))
 
 
 ### GEOGRAPHIC DATA ####
