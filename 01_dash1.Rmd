@@ -422,7 +422,11 @@ Row {data-height=1000}
 ```{r}
 
 ev_big <- events %>% 
-  select(-cand_restname, -cand_lastname)
+  select(-cand_restname, -cand_lastname, -cd_if_known, -county) %>% 
+  mutate(
+    approx_date = as.factor(approx_date),
+    city = as.factor(city)
+    )
 
 datatable(ev_big,
           rownames = FALSE,
