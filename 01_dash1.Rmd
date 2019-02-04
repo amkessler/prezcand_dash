@@ -346,7 +346,7 @@ next5 %>%
 ```
 
 
-### Visits per state over the next week
+### Trips per state over the next week
 
 ```{r}
 
@@ -368,11 +368,11 @@ pal <- colorNumeric("Greens", domain=states_merged_sb$total)
 # Getting rid of rows with NA values
 # Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
 states_merged_sb <- subset(states_merged_sb, !is.na(total))
-
+states_merged_sb$total <- as.integer(states_merged_sb$total)
 
 #create map with hover popups
 
-popup_sb <- paste0("Trips: ", as.character(states_merged_sb$total))
+popup_sb <- paste0("Trips over coming week: ", as.character(states_merged_sb$total))
 
 leaflet() %>%
   addTiles() %>%
@@ -393,9 +393,12 @@ leaflet() %>%
                 textsize = "15px",
                 direction = "auto")) %>%
   addLegend(pal = pal, 
-            values = states_merged_sb$total, 
+            values = states_merged_sb$total,
+            bins = 4,
             position = "bottomright", 
-            title = "Total trips")
+            title = "Total trips", 
+            labFormat = labelFormat(digits = 0)
+            )
 
 # 
 # mymap %>% 
