@@ -363,7 +363,7 @@ upcoming_states <- events %>%
 states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
 
 # Creating a color palette based on the number range in the total column
-pal <- colorNumeric("Greens", domain=states_merged_sb$total)
+pal <- colorNumeric("YlGn", domain=states_merged_sb$total)
 
 # Getting rid of rows with NA values
 # Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
@@ -448,7 +448,7 @@ Maps
 Row 
 -----------------------------------------------------------------------
 
-### Trips to date
+### Total trips to date by all candidates
 
 ```{r}
 
@@ -464,7 +464,7 @@ upcoming_states <- events %>%
 states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
 
 # Creating a color palette based on the number range in the total column
-pal <- colorNumeric("Purples", domain=states_merged_sb$total)
+pal <- colorNumeric("YlOrRd", domain=states_merged_sb$total)
 
 # Getting rid of rows with NA values
 # Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
@@ -506,7 +506,7 @@ leaflet() %>%
 ```
 
 
-### Upcoming scheduled trips (subject to change)
+### All known upcoming trips (subject to change)
 
 ```{r}
 
@@ -522,7 +522,7 @@ upcoming_states <- events %>%
 states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
 
 # Creating a color palette based on the number range in the total column
-pal <- colorNumeric("Greens", domain=states_merged_sb$total)
+pal <- colorNumeric("YlGn", domain=states_merged_sb$total)
 
 # Getting rid of rows with NA values
 # Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
