@@ -122,8 +122,14 @@ announcements <- dw2020 %>%
 
 ### GEOGRAPHIC DATA ####
 
-# Downloading the shapefiles for states at the lowest resolution from tigris
-states <- states(cb=T)
+# # Downloading the shapefiles for states at the lowest resolution from tigris
+# states <- states(cb=T)
+# #save result
+# saveRDS(states, "states_saved.rds")
+
+## use saved version to pull states from to save processing time (comment out code above when doing so)
+states <- readRDS("states_saved.rds")
+
 
 
 # write_csv(events, "events_temp.csv")
