@@ -31,11 +31,15 @@ options(tigris_class = "sf")
 
 ### DATA LOADING AND PREP
 
-### **new** import from saved feather files
-# write results to feather file
-events <- readRDS("events_data.rds")
-keyremarks <- readRDS("keyremarks_data.rds")
-announcements <- readRDS("announcements_data.rds")
+### **new** import from saved files
+events <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/events_data.rds")))
+keyremarks <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/keyremarks_data.rds")))
+announcements <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/announcements_data.rds")))
+
+# events <- readRDS("events_data.rds")
+# keyremarks <- readRDS("keyremarks_data.rds")
+# announcements <- readRDS("announcements_data.rds")
+
 
 
 #when feather files above being used, comment out gsheet imports below #
