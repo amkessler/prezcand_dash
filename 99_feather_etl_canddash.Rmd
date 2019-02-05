@@ -1,0 +1,70 @@
+---
+output: html_document
+resource_files:
+- .httr-oauth
+rmd_output_metadata:
+  rsc_output_files:
+    - "data.feather"
+---
+
+# Data Pull Started at `r Sys.time()`
+
+Scheduling a Rmd file with embedded ETL code is really helpful. It allows the data engineer to document the process side-by-side with the code. There is also a generated artefact that is produced (besides the data file) for each run of the process. 
+
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(googlesheets)
+library(feather)
+
+```
+
+Load in from google sheet and prep dataframe
+```{r gsheet_load}
+
+# import data from Google Sheet 
+
+#register DW's 2020 google sheet
+dw2020 <- gs_key("1rhCkWIHW3kblAP2H-1A7_123ACCuJLoafGXfnEldYl4")
+
+#read in all the data in the rally/event tab
+events <- dw2020 %>% 
+  gs_read(ws = "AK VER Rally / Event Tracker") %>% 
+  clean_names() 
+
+#set formatting of certain columns
+df <- events %>% 
+  mutate(
+    date = mdy(date),
+    thru_date = mdy(thru_date),
+    cand_fullname = as.factor(cand_fullname),
+    state = as.factor(state),
+    cd_if_known = as.factor(cd_if_known),
+    event_type = as.factor(event_type),
+    cand_fullname = as.factor(cand_fullname),
+    cand_lastname = as.factor(cand_lastname),
+    sponsor = as.factor(sponsor)
+         )
+
+
+df <- df %>% 
+  count(state) %>% 
+  rename(token = state, count = n)
+
+```
+
+
+Write to a feather file
+
+```{r feather_file}
+
+
+# write results to feather file
+write_feather(df, "data.feather")
+
+```
+
+
