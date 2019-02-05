@@ -31,6 +31,15 @@ options(tigris_class = "sf")
 
 ### DATA LOADING AND PREP
 
+### **new** import from saved feather files
+# write results to feather file
+write_feather(events, "events_data.feather")
+write_feather(keyremarks, "keyremarks_data.feather")
+write_feather(announcements, "announcements_data.feather")
+
+
+
+
 # import data from Google Sheet 
 
 #register DW's 2020 google sheet
