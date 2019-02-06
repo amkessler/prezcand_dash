@@ -273,12 +273,14 @@ next5 <- events %>%
 
 #remove NA's from city descriptions without a city
 next5$location <- str_remove(next5$location, "NA, ")
+next5$date <- format(date, "%b %d")
 
 next5 %>% 
     kable() %>% 
     kable_styling(bootstrap_options = c("striped"), 
                 full_width = F,
                 position = "left")
+
 
 
 ```
