@@ -273,7 +273,7 @@ next5 <- events %>%
 
 #remove NA's from city descriptions without a city
 next5$location <- str_remove(next5$location, "NA, ")
-next5$date <- format(date, "%b %d")
+next5$date <- format(next5$date, "%a %b %d")
 
 next5 %>% 
     kable() %>% 
@@ -416,7 +416,7 @@ datatable(remarks_big,
           filter = "top",
           extensions = 'Buttons',
           options = list(bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400,
-     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+     buttons = c('copy', 'csv', 'excel', 'print')
           )) %>%
   formatDate('date', 'toLocaleDateString') %>%
   formatStyle('candidate', fontWeight = 'bold')

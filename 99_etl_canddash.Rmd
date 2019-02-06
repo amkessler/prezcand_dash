@@ -121,7 +121,7 @@ dt_detailed_table <- datatable(ev_big,
           filter = "top",
           extensions = 'Buttons',
           options = list(bPaginate = FALSE, dom = 'Bfrtip',
-     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+     buttons = c('copy', 'csv', 'excel', 'print')
           )) %>%
   formatDate('date', 'toLocaleDateString') %>%
   formatDate('thru_date', 'toLocaleDateString') %>%
