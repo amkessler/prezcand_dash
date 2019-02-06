@@ -55,7 +55,7 @@ events <- events %>%
     sponsor = as.factor(sponsor)
          )
 
-
+saveRDS(events, "events_saved.rds")
 
 #by state counts
 bystate <- events %>% 
