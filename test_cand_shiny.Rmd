@@ -36,6 +36,8 @@ options(tigris_class = "sf")
 events <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/events_data.rds")))
 keyremarks <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/keyremarks_data.rds")))
 announcements <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/announcements_data.rds")))
+dt_detailed_table <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/dt_detailed_table.rds")))
+dt_keyremarks <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/dt_keyremarks.rds")))
 
 # events <- readRDS("events_data.rds")
 # keyremarks <- readRDS("keyremarks_data.rds")
@@ -433,20 +435,23 @@ Row {data-height=1000}
 -----------------------------------------------------------------------
 
 ```{r}
+# 
+# ev_big <- events %>% 
+#   select(-cand_restname, -cand_lastname, -cd_if_known, -county) 
+# 
+# datatable(ev_big,
+#           rownames = FALSE,
+#           filter = "top",
+#           extensions = 'Buttons',
+#           options = list(bPaginate = FALSE, dom = 'Bfrtip',
+#      buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+#           )) %>%
+#   formatDate('date', 'toLocaleDateString') %>%
+#   formatDate('thru_date', 'toLocaleDateString') %>%
+#   formatStyle('cand_fullname', fontWeight = 'bold')
 
-ev_big <- events %>% 
-  select(-cand_restname, -cand_lastname, -cd_if_known, -county) 
 
-datatable(ev_big,
-          rownames = FALSE,
-          filter = "top",
-          extensions = 'Buttons',
-          options = list(bPaginate = FALSE, dom = 'Bfrtip',
-     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
-          )) %>%
-  formatDate('date', 'toLocaleDateString') %>%
-  formatDate('thru_date', 'toLocaleDateString') %>%
-  formatStyle('cand_fullname', fontWeight = 'bold')
+dt_detailed_table
 
 
 ```
@@ -621,36 +626,38 @@ Row {data-height=1000}
 
 ```{r}
 
-remarks_big <- keyremarks %>% 
-  select(candidate,
-         date,
-         venue,
-         city,
-         state,
-         on_cam,
-         ms_number,
-         subject_1,
-         tc_in,
-         key_sound,
-         subject_2,
-         tc_in_2,
-         other_sound,
-        source_link
-          ) %>% 
-  mutate(
-    on_cam = as.factor(str_to_lower(on_cam))
-  ) %>% 
-  arrange(desc(date))
+# remarks_big <- keyremarks %>% 
+#   select(candidate,
+#          date,
+#          venue,
+#          city,
+#          state,
+#          on_cam,
+#          ms_number,
+#          subject_1,
+#          tc_in,
+#          key_sound,
+#          subject_2,
+#          tc_in_2,
+#          other_sound,
+#         source_link
+#           ) %>% 
+#   mutate(
+#     on_cam = as.factor(str_to_lower(on_cam))
+#   ) %>% 
+#   arrange(desc(date))
+# 
+# datatable(remarks_big,
+#           rownames = FALSE,
+#           filter = "top",
+#           extensions = 'Buttons',
+#           options = list(bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400, 
+#      buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+#           )) %>%
+#   formatDate('date', 'toLocaleDateString') %>%
+#   formatStyle('candidate', fontWeight = 'bold')
 
-datatable(remarks_big,
-          rownames = FALSE,
-          filter = "top",
-          extensions = 'Buttons',
-          options = list(bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400, 
-     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
-          )) %>%
-  formatDate('date', 'toLocaleDateString') %>%
-  formatStyle('candidate', fontWeight = 'bold')
+dt_keyremarks
 
 
 ```

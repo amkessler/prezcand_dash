@@ -7,6 +7,9 @@ rmd_output_metadata:
     - "events_data.rds"
     - "keyremarks_data.rds"
     - "announcements_data.rds"
+    - "dt_detailed_table.rds"
+    - "dt_keyremarks.rds"
+    - "leafmap_upcomingweek.rds"
 ---
 
 
@@ -23,6 +26,18 @@ library(lubridate)
 library(janitor)
 library(googlesheets)
 library(feather)
+library(DT)
+library(glue)
+library(plotly)
+library(kableExtra)
+library(leaflet)
+# library(ggmap)
+library(RColorBrewer)
+library(htmltools)
+library(tigris)
+options(tigris_class = "sf")
+
+
 
 ```
 
@@ -85,6 +100,118 @@ announcements <- dw2020 %>%
   select(-x7, -x8) %>% 
   arrange(desc(date))
 
+### GEOGRAPHIC DATA ####
+
+# # Downloading the shapefiles for states at the lowest resolution from tigris
+states <- states(cb=T)
+
+
+### PRE FAB ELEMENTS #####
+
+## CREATE PRE-FAB DT TABLE FOR FULL DETAILED DATA TAB ####
+
+ev_big <- events %>% 
+  select(-cand_restname, -cand_lastname, -cd_if_known, -county) 
+
+dt_detailed_table <- datatable(ev_big,
+          rownames = FALSE,
+          filter = "top",
+          extensions = 'Buttons',
+          options = list(bPaginate = FALSE, dom = 'Bfrtip',
+     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+          )) %>%
+  formatDate('date', 'toLocaleDateString') %>%
+  formatDate('thru_date', 'toLocaleDateString') %>%
+  formatStyle('cand_fullname', fontWeight = 'bold')
+
+
+## CREATE PRE-FAB DT TABLE FOR KEY REMARKS TAB ####
+
+remarks_big <- keyremarks %>% 
+  select(candidate,
+         date,
+         venue,
+         city,
+         state,
+         on_cam,
+         ms_number,
+         subject_1,
+         tc_in,
+         key_sound,
+         subject_2,
+         tc_in_2,
+         other_sound,
+        source_link
+          ) %>% 
+  mutate(
+    on_cam = as.factor(str_to_lower(on_cam))
+  ) %>% 
+  arrange(desc(date))
+
+dt_keyremarks <- datatable(remarks_big,
+          rownames = FALSE,
+          filter = "top",
+          extensions = 'Buttons',
+          options = list(bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400, 
+     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+          )) %>%
+  formatDate('date', 'toLocaleDateString') %>%
+  formatStyle('candidate', fontWeight = 'bold')
+
+
+
+### map of visits over next week ####
+
+upcoming_states <- events %>% 
+  filter(date > Sys.Date(),
+         date < (Sys.Date()+7)) %>% 
+  group_by(state) %>%
+  summarize(total=n()) 
+
+# Now we use the Tigris function geo_join to bring together 
+# are the two columns they'll be joined by
+states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
+
+# Creating a color palette based on the number range in the total column
+pal <- colorNumeric("YlGn", domain=states_merged_sb$total)
+
+# Getting rid of rows with NA values
+# Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
+states_merged_sb <- subset(states_merged_sb, !is.na(total))
+states_merged_sb$total <- as.integer(states_merged_sb$total)
+
+#create map with hover popups
+
+popup_sb <- paste0("Trips over coming week: ", as.character(states_merged_sb$total))
+
+leafmap_upcomingweek <- leaflet() %>%
+  addTiles() %>%
+  # setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addPolygons(data = states_merged_sb , 
+              fillColor = ~pal(states_merged_sb$total), 
+              fillOpacity = 0.9, 
+              weight = 0.2, 
+              smoothFactor = 0.2,
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label=popup_sb,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "15px",
+                direction = "auto")) %>%
+  addLegend(pal = pal, 
+            values = states_merged_sb$total,
+            bins = 4,
+            position = "bottomright", 
+            title = "Total trips", 
+            labFormat = labelFormat(digits = 0)
+            )
+
+
+
 
 ```
 
@@ -97,6 +224,11 @@ Write to files
 saveRDS(events, "events_data.rds")
 saveRDS(keyremarks, "keyremarks_data.rds")
 saveRDS(announcements, "announcements_data.rds")
+saveRDS(dt_detailed_table, "dt_detailed_table.rds")
+saveRDS(dt_keyremarks, "dt_keyremarks.rds")
+saveRDS(leafmap_upcomingweek, "leafmap_upcomingweek.rds")
+
+leafmap_upcomingweek
 
 ```
 

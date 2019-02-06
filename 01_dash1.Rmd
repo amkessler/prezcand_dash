@@ -35,10 +35,15 @@ options(tigris_class = "sf")
 events <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/events_data.rds")))
 keyremarks <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/keyremarks_data.rds")))
 announcements <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/announcements_data.rds")))
+dt_detailed_table <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/dt_detailed_table.rds")))
+# dt_keyremarks <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/dt_keyremarks.rds")))
+leafmap_upcomingweek <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/leafmap_upcomingweek.rds")))
+
+
 
 # events <- readRDS("events_data.rds")
 # keyremarks <- readRDS("keyremarks_data.rds")
-# announcements <- readRDS("announcements_data.rds")
+# dt_detailed_table <- readRDS("dt_detailed_table.rds")
 
 
 
@@ -362,59 +367,60 @@ next5 %>%
 
 ```{r}
 
-#### STATE BY STATE SHADED MAP ####
 
-upcoming_states <- events %>% 
-  filter(date > Sys.Date(),
-         date < (Sys.Date()+7)) %>% 
-  group_by(state) %>%
-  summarize(total=n()) 
-
-# Now we use the Tigris function geo_join to bring together 
-# are the two columns they'll be joined by
-states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
-
-# Creating a color palette based on the number range in the total column
-pal <- colorNumeric("YlGn", domain=states_merged_sb$total)
-
-# Getting rid of rows with NA values
-# Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
-states_merged_sb <- subset(states_merged_sb, !is.na(total))
-states_merged_sb$total <- as.integer(states_merged_sb$total)
-
-#create map with hover popups
-
-popup_sb <- paste0("Trips over coming week: ", as.character(states_merged_sb$total))
-
-leaflet() %>%
-  addTiles() %>%
-  # setView(-98.483330, 38.712046, zoom = 4) %>% 
-  addPolygons(data = states_merged_sb , 
-              fillColor = ~pal(states_merged_sb$total), 
-              fillOpacity = 0.9, 
-              weight = 0.2, 
-              smoothFactor = 0.2,
-              highlight = highlightOptions(
-                weight = 5,
-                color = "#666",
-                fillOpacity = 0.7,
-                bringToFront = TRUE),
-              label=popup_sb,
-              labelOptions = labelOptions(
-                style = list("font-weight" = "normal", padding = "3px 8px"),
-                textsize = "15px",
-                direction = "auto")) %>%
-  addLegend(pal = pal, 
-            values = states_merged_sb$total,
-            bins = 4,
-            position = "bottomright", 
-            title = "Total trips", 
-            labFormat = labelFormat(digits = 0)
-            )
+leafmap_upcomingweek
 
 # 
-# mymap %>% 
-#   addTiles()
+# #### STATE BY STATE SHADED MAP ####
+# 
+# upcoming_states <- events %>% 
+#   filter(date > Sys.Date(),
+#          date < (Sys.Date()+7)) %>% 
+#   group_by(state) %>%
+#   summarize(total=n()) 
+# 
+# # Now we use the Tigris function geo_join to bring together 
+# # are the two columns they'll be joined by
+# states_merged_sb <- geo_join(states, upcoming_states, "STUSPS", "state")
+# 
+# # Creating a color palette based on the number range in the total column
+# pal <- colorNumeric("YlGn", domain=states_merged_sb$total)
+# 
+# # Getting rid of rows with NA values
+# # Using the Base R method of filtering subset() because we're dealing with a SpatialPolygonsDataFrame and not a normal data frame, thus filter() wouldn't work
+# states_merged_sb <- subset(states_merged_sb, !is.na(total))
+# states_merged_sb$total <- as.integer(states_merged_sb$total)
+# 
+# #create map with hover popups
+# 
+# popup_sb <- paste0("Trips over coming week: ", as.character(states_merged_sb$total))
+# 
+# leaflet() %>%
+#   addTiles() %>%
+#   # setView(-98.483330, 38.712046, zoom = 4) %>% 
+#   addPolygons(data = states_merged_sb , 
+#               fillColor = ~pal(states_merged_sb$total), 
+#               fillOpacity = 0.9, 
+#               weight = 0.2, 
+#               smoothFactor = 0.2,
+#               highlight = highlightOptions(
+#                 weight = 5,
+#                 color = "#666",
+#                 fillOpacity = 0.7,
+#                 bringToFront = TRUE),
+#               label=popup_sb,
+#               labelOptions = labelOptions(
+#                 style = list("font-weight" = "normal", padding = "3px 8px"),
+#                 textsize = "15px",
+#                 direction = "auto")) %>%
+#   addLegend(pal = pal, 
+#             values = states_merged_sb$total,
+#             bins = 4,
+#             position = "bottomright", 
+#             title = "Total trips", 
+#             labFormat = labelFormat(digits = 0)
+#             )
+
 
 
 
@@ -433,19 +439,21 @@ Row {data-height=1000}
 
 ```{r}
 
-ev_big <- events %>% 
-  select(-cand_restname, -cand_lastname, -cd_if_known, -county) 
+# ev_big <- events %>% 
+#   select(-cand_restname, -cand_lastname, -cd_if_known, -county) 
+# 
+# datatable(ev_big,
+#           rownames = FALSE,
+#           filter = "top",
+#           extensions = 'Buttons',
+#           options = list(bPaginate = FALSE, dom = 'Bfrtip',
+#      buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+#           )) %>%
+#   formatDate('date', 'toLocaleDateString') %>%
+#   formatDate('thru_date', 'toLocaleDateString') %>%
+#   formatStyle('cand_fullname', fontWeight = 'bold')
 
-datatable(ev_big,
-          rownames = FALSE,
-          filter = "top",
-          extensions = 'Buttons',
-          options = list(bPaginate = FALSE, dom = 'Bfrtip',
-     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
-          )) %>%
-  formatDate('date', 'toLocaleDateString') %>%
-  formatDate('thru_date', 'toLocaleDateString') %>%
-  formatStyle('cand_fullname', fontWeight = 'bold')
+dt_detailed_table
 
 
 ```
@@ -620,7 +628,7 @@ Row {data-height=1000}
 
 ```{r}
 
-remarks_big <- keyremarks %>% 
+remarks_big <- keyremarks %>%
   select(candidate,
          date,
          venue,
@@ -635,21 +643,23 @@ remarks_big <- keyremarks %>%
          tc_in_2,
          other_sound,
         source_link
-          ) %>% 
+          ) %>%
   mutate(
     on_cam = as.factor(str_to_lower(on_cam))
-  ) %>% 
+  ) %>%
   arrange(desc(date))
 
 datatable(remarks_big,
           rownames = FALSE,
           filter = "top",
           extensions = 'Buttons',
-          options = list(bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400, 
+          options = list(bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400,
      buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
           )) %>%
   formatDate('date', 'toLocaleDateString') %>%
   formatStyle('candidate', fontWeight = 'bold')
+
+
 
 
 ```
