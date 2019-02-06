@@ -12,6 +12,7 @@ rmd_output_metadata:
     - "leafmap_upcomingweek.rds"
     - "leaf_allpasttrips.rds"
     - "leaf_allfuturetrips.rds"
+    - "time_updated.rds"
 ---
 
 
@@ -313,8 +314,9 @@ leaf_allfuturetrips <- leaflet() %>%
             labFormat = labelFormat(digits = 0)
             )
 
-
-
+## save timestamp ####
+time_updated <- Sys.time()
+time_updated <- .POSIXct(time_updated, "EST")
 
 ```
 
@@ -323,7 +325,7 @@ Write to files
 
 ```{r save_files}
 
-# write results to feather file
+# write results to files
 saveRDS(events, "events_data.rds")
 saveRDS(keyremarks, "keyremarks_data.rds")
 saveRDS(announcements, "announcements_data.rds")
@@ -332,7 +334,7 @@ saveRDS(dt_keyremarks, "dt_keyremarks.rds")
 saveRDS(leafmap_upcomingweek, "leafmap_upcomingweek.rds")
 saveRDS(leaf_allpasttrips, "leaf_allpasttrips.rds")
 saveRDS(leaf_allfuturetrips, "leaf_allfuturetrips.rds")
-
+saveRDS(time_updated, "time_updated.rds")
 
 
 ```

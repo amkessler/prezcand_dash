@@ -40,12 +40,12 @@ dt_detailed_table <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/cont
 leafmap_upcomingweek <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/leafmap_upcomingweek.rds")))
 leaf_allpasttrips <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/leaf_allpasttrips.rds")))
 leaf_allfuturetrips <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/leaf_allfuturetrips.rds")))
+time_updated <- readRDS(gzcon(url("https://connect.adds.turnerapps.com/content/51/time_updated.rds")))
+
 
 # events <- readRDS("events_data.rds")
 # keyremarks <- readRDS("keyremarks_data.rds")
 # dt_detailed_table <- readRDS("dt_detailed_table.rds")
-
-
 
 #when feather files above being used, comment out gsheet imports below #
 
@@ -154,18 +154,18 @@ events_selectcols <- events %>%
 # write_csv(bystate, "bystate.csv")
 
 # set time object set to EST
-d <- Sys.Date()
+# d <- Sys.Date()
 # d <- .POSIXct(d, "EST")
   
-t <- Sys.time()
-t <- .POSIXct(t, "EST")
+# t <- Sys.time()
+# t <- .POSIXct(t, "EST")
 
 ```
 
 
 Summary Charts and Table
 ===================================== 
-Trips from Nov 06 through `r format(d, format="%b %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. (Last updated on `r format(t, format="%B %d %I:%M %Z")`)
+Trips taken since Nov 6. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. (Last updated on `r format(time_updated, format="%B %d %I:%M %Z")`)
 <!-- (This dashboard was last updated at `r format(Sys.time(), "%a %b %d %X")`)  -->
 
 Row {data-height=650}
