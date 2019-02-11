@@ -148,7 +148,7 @@ t <- .POSIXct(t, "EST")
 
 Summary Charts and Table
 ===================================== 
-Trips from Nov 06 through `r format(d, format="%b %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. (Last updated on `r format(t, format="%B %d %I:%M %Z")`)
+Trips from Nov 06 through `r format(d, format="%b %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. (Last updated on `r format(t, format="%B %d %I:%M %p %Z")`)
 <!-- (This dashboard was last updated at `r format(Sys.time(), "%a %b %d %X")`)  -->
 
 Row {data-height=650}
