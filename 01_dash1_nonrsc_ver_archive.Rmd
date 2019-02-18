@@ -412,7 +412,7 @@ leaflet() %>%
 
 
 
-Full Detailed Data 
+Detailed Event Data 
 =====================================
 To filter, click on the boxes at the top of the columns. To sort, use the up/down arrows by the column names.
 
@@ -602,7 +602,7 @@ valueBox(tot_ahead, icon = "fa-plane", color = "#48B052")
 
 
 
-Key Interviews & Remarks 
+Key SOTs & Remarks 
 =====================================
 To filter, click on the boxes above the column names. To sort, use the up/down arrows by the column names.
 
