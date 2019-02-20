@@ -89,7 +89,7 @@ bycand <- bycand %>%
 
 #slimmed version of table for display in summary tab
 events_selectcols <- events %>% 
-  select(cand_fullname, date, city, state, event_type, sponsor, description)
+  select(cand_fullname, date, city, state, addtl_cities, event_type, sponsor, description)
 
 
 
@@ -148,7 +148,7 @@ t <- .POSIXct(t, "EST")
 
 Summary Charts and Table
 ===================================== 
-Trips from Nov 06 through `r format(d, format="%b %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. (Last updated on `r format(t, format="%B %d %I:%M %p %Z")`)
+Trips from Nov 06 through `r format(d, format="%b %d")`. To filter, click on the boxes above the columns. To sort, use the up/down arrows by the column names. *Note: if a candidate visits multiple cities in the same state, on the same day, they are counted below as one campaign trip. The additional locations are included in the "addtl_cities" column.*  (Last updated on `r format(t, format="%B %d %I:%M %p %Z")`) 
 <!-- (This dashboard was last updated at `r format(Sys.time(), "%a %b %d %X")`)  -->
 
 Row {data-height=650}
@@ -206,7 +206,7 @@ datatable(events_past_grp,
 Row {data-height=350}
 -----------------------------------------------------------------------
 
-### Top states for visits since midterm election
+### Top states for trips since midterm election
 
 ```{r}
 
@@ -232,7 +232,7 @@ dd_nomenu
 ```
 
 
-### Candidates with most visits since midterm election
+### Candidates with most trips since midterm election
 
 ```{r}
 
@@ -330,7 +330,7 @@ next5 <- events %>%
   filter(date > Sys.Date(),
          date < (Sys.Date()+7)) %>% 
   mutate(location = paste0(city, ", ", state)) %>% 
-  select(cand_lastname, date, location, event_type, description) %>% 
+  select(cand_lastname, date, location, addtl_cities, event_type, description) %>% 
   arrange(date)
 
 #remove NA's from city descriptions without a city
