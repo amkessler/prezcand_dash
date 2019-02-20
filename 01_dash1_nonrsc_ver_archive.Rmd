@@ -175,10 +175,14 @@ events_past <- events_selectcols %>%
 
 datatable(events_past, 
           rownames = FALSE, 
-          filter = "top") %>% 
+          filter = "top",
+          options = list(searchHighlight = TRUE)) %>% 
   formatDate('date', 'toDateString') %>%  
   # formatDate('thru_date', 'toDateString') %>%
   formatStyle('cand_fullname', fontWeight = 'bold') 
+
+
+
 
 
 ```
@@ -444,7 +448,7 @@ datatable(ev_big,
           rownames = FALSE,
           filter = "top",
           extensions = 'Buttons',
-          options = list(bPaginate = FALSE, dom = 'Bfrtip',
+          options = list(searchHighlight = TRUE, bPaginate = FALSE, dom = 'Bfrtip',
      buttons = c('copy', 'excel', 'pdf', 'print')
           )) %>%
   formatDate('date', 'toLocaleDateString') %>%
@@ -649,8 +653,8 @@ datatable(remarks_big,
           rownames = FALSE,
           filter = "top",
           extensions = 'Buttons',
-          options = list(bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400, 
-     buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+          options = list(searchHighlight = TRUE, bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400, 
+     buttons = c('copy', 'excel', 'pdf', 'print')
           )) %>%
   formatDate('date', 'toLocaleDateString') %>%
   formatStyle('candidate', fontWeight = 'bold')
