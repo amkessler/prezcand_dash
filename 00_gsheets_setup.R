@@ -8,7 +8,7 @@ library(plotly)
 library(RColorBrewer)
 
 #this will trigger a web page to authenticate with google account
-# gs_ls() %>% View()
+gs_ls() 
 
 
 #register DW's 2020 google sheet
