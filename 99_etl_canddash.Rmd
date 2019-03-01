@@ -50,7 +50,8 @@ Load in from google sheet and prep dataframe
 # import data from Google Sheet 
 
 #register DW's 2020 google sheet
-dw2020 <- gs_key("1rhCkWIHW3kblAP2H-1A7_123ACCuJLoafGXfnEldYl4")
+mykey <- Sys.getenv("DW2020_KEY")
+dw2020 <- gs_key(mykey)
 
 #read in all the data in the rally/event tab
 events <- dw2020 %>% 
