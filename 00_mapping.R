@@ -14,7 +14,8 @@ library(tigris)
 
 
 #register DW's 2020 google sheet
-dw2020 <- gs_key("1rhCkWIHW3kblAP2H-1A7_123ACCuJLoafGXfnEldYl4")
+mykey <- Sys.getenv("DW2020_KEY")
+dw2020 <- gs_key(mykey)
 
 #list worksheets in the google sheet
 gs_ws_ls(dw2020)
