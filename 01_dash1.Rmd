@@ -58,13 +58,12 @@ events <- events %>%
 
 saveRDS(events, "events_saved.rds")
 
-#by state counts
+#by state counts - only PAST events
 bystate <- events %>% 
   filter(date < Sys.Date()) %>% 
   count(state) %>% 
   arrange(desc(n)) %>% 
   head(10)
-
 #reorder factors to order bars descending
 bystate <- bystate %>% 
   mutate(
@@ -73,13 +72,12 @@ bystate <- bystate %>%
     )
 
 
-# by cand_fullname counts to date
+# by cand_fullname counts to date - only PAST events
 bycand <- events %>%
-  filter(date < Sys.Date()) %>% 
+  filter(date < Sys.Date()) %>%  
   count(cand_fullname) %>%
   arrange(desc(n)) %>% 
   head(10)
-
 #reorder factors to order bars descending
 bycand <- bycand %>%
   mutate(
