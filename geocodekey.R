@@ -1,1 +1,0 @@
-register_google(key = "AIzaSyDcXIZROh7AF4S90tcTEFajOcsMc1cvcaY")
