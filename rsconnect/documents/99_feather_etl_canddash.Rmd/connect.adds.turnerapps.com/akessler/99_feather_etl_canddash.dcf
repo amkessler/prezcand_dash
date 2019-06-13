@@ -1,0 +1,12 @@
+name: 99_feather_etl_canddash
+title: 99_feather_etl_canddash
+username: akessler
+account: akessler
+server: connect.adds.turnerapps.com
+hostUrl: https://connect.adds.turnerapps.com/__api__
+appId: 50
+bundleId: 138
+url: https://connect.adds.turnerapps.com/content/50/
+when: 1549338262.63856
+asMultiple: FALSE
+asStatic: FALSE

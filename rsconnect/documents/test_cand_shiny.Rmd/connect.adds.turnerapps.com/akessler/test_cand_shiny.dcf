@@ -1,0 +1,12 @@
+name: test_cand_shiny
+title: test_cand_shiny
+username: akessler
+account: akessler
+server: connect.adds.turnerapps.com
+hostUrl: https://connect.adds.turnerapps.com/__api__
+appId: 48
+bundleId: 155
+url: https://connect.adds.turnerapps.com/content/48/
+when: 1549411699.05965
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,0 +1,12 @@
+name: test_nomaps
+title: test_nomaps
+username: akessler
+account: akessler
+server: connect.adds.turnerapps.com
+hostUrl: https://connect.adds.turnerapps.com/__api__
+appId: 38
+bundleId: 99
+url: https://connect.adds.turnerapps.com/content/38/
+when: 1548800002.88154
+asMultiple: FALSE
+asStatic: FALSE
