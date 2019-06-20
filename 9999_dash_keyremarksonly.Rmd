@@ -68,7 +68,7 @@ t <- .POSIXct(t, "EST")
 
 
 
-Key SOTs & Remarks 
+Key Comments & Remarks 
 =====================================
 To filter, click on the boxes above the column names. To sort, use the up/down arrows by the column names.
 
@@ -83,26 +83,23 @@ remarks_big <- keyremarks %>%
          venue,
          city,
          state,
-         on_cam,
-         ms_number,
          subject_1,
-         tc_in,
          key_sound,
          subject_2,
-         tc_in_2,
          other_sound,
-        source_link
+         source_link
           ) %>% 
-  mutate(
-    on_cam = as.factor(str_to_lower(on_cam))
-  ) %>% 
-  arrange(desc(date))
+   arrange(desc(date))
 
 datatable(remarks_big,
           rownames = FALSE,
           filter = "top",
           extensions = 'Buttons',
-          options = list(searchHighlight = TRUE, bPaginate = FALSE, dom = 'Bfrtip', scrollX=TRUE,scrollY=400, 
+          options = list(searchHighlight = TRUE, 
+                         # bPaginate = FALSE, 
+                         dom = 'Bfrtip', 
+                         scrollX=TRUE,
+                         scrollY=400, 
      buttons = c('copy', 'excel', 'pdf', 'print')
           )) %>%
   formatDate('date', 'toLocaleDateString') %>%
