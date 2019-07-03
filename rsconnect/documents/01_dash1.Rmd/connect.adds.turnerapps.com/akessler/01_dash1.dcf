@@ -1,0 +1,12 @@
+name: 01_dash1
+title: 01_dash1
+username: akessler
+account: akessler
+server: connect.adds.turnerapps.com
+hostUrl: https://connect.adds.turnerapps.com/__api__
+appId: 37
+bundleId: 187
+url: https://connect.adds.turnerapps.com/prez_candidates/
+when: 1550699213.70412
+asMultiple: FALSE
+asStatic: FALSE

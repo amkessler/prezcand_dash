@@ -4,3 +4,4 @@
 .Ruserdata
 .httr-oauth
 events_saved.rds
+.Renviron

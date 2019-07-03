@@ -1,0 +1,12 @@
+name: 999_shinytest
+title: 999_shinytest
+username: akessler
+account: akessler
+server: connect.adds.turnerapps.com
+hostUrl: https://connect.adds.turnerapps.com/__api__
+appId: 44
+bundleId: 107
+url: https://connect.adds.turnerapps.com/content/44/
+when: 1548872098.99404
+asMultiple: FALSE
+asStatic: FALSE

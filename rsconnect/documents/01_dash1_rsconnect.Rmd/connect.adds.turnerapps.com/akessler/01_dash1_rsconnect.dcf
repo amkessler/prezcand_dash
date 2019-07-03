@@ -1,0 +1,12 @@
+name: 01_dash1_rsconnect
+title: 01_dash1_rsconnect
+username: akessler
+account: akessler
+server: connect.adds.turnerapps.com
+hostUrl: https://connect.adds.turnerapps.com/__api__
+appId: 45
+bundleId: 112
+url: https://connect.adds.turnerapps.com/content/45/
+when: 1548969007.45425
+asMultiple: FALSE
+asStatic: FALSE
