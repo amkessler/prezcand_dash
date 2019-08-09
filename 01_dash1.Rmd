@@ -196,7 +196,7 @@ datatable(events_past,
 events_past_grp <- events_selectcols %>%
   filter(date <= today("EST")) %>% 
   count(cand_fullname, state) %>% 
-  arrange(cand_fullname, desc(n)) %>% 
+  arrange(desc(n)) %>% 
   rename(trips = n)
 
 datatable(events_past_grp, 
