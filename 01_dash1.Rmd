@@ -56,7 +56,7 @@ events <- events %>%
     sponsor = as.factor(sponsor)
          )
 
-saveRDS(events, "events_saved.rds")
+# saveRDS(events, "events_saved.rds")
 
 #by state counts - only PAST events
 bystate <- events %>% 
